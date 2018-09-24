@@ -9,3 +9,9 @@ $('#login-form').submit((evnt) => {
     $('#message').html(data);
   });
 });
+$('#logout').click((evnt) => {
+  evnt.preventDefault();
+  $.get('/logout', (data) => {
+    $('#message').html(data);
+  });
+});

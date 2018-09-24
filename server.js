@@ -6,6 +6,8 @@ const { check } = require('express-validator/check');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const bcrypt = require('bcrypt');
+const uuidv4 = require('uuid/v4');
+
 const saltRounds = 10;
 //const mongoose = require('mongoose');
 
@@ -16,6 +18,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static('public'));
 app.use(session({
+  genid: function(req) {
+    return uuidv4(); // use UUIDs for session IDs
+  },
   secret: 'thisIsASecretKey',
   saveUninitialized: false, // don't create session until something stored
   resave: false, //don't save session if unmodified
@@ -69,6 +74,12 @@ app.post('/register', [
     });
   });
 });
+app.get('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) console.log(err);
+    else res.send('logged out');
+  });
+});
 app.get('/login', (req, res) => {
   res.sendFile('./views/login.html', {root: __dirname})
 });
@@ -77,9 +88,13 @@ app.post('/login', [
   check('pass').isString().trim().escape(),
 ], (req, res) => {
   console.log(req.body.email);
-  console.log(req.body.pass)
+  console.log(req.body.pass);
+  console.log(`session id ${req.session}`);
+  Object.keys(req.session).forEach((key) => {
+    console.log(key, req.session[key]);
+  })
   if (req.session.user) {
-    res.send('already logged in');
+    res.send(`already logged in ${req.session.id}`);
     return;
   }
   MongoClient.connect(dbUrl, { useNewUrlParser: true }, function(err, client) {
@@ -97,6 +112,7 @@ app.post('/login', [
                 console.log(err);
               }
               if (match) {
+                //req.session.id = uuidv4();
                 req.session.user = req.body.email;
                 res.send('successfully logged in');
               } else {
