@@ -11,7 +11,7 @@ const uuidv4 = require('uuid/v4');
 const saltRounds = 10;
 //const mongoose = require('mongoose');
 
-const dbUrl = 'mongodb://sachin:#sachin1@learnmongo-shard-00-00-q5opk.mongodb.net:27017,learnmongo-shard-00-01-q5opk.mongodb.net:27017,learnmongo-shard-00-02-q5opk.mongodb.net:27017/test?ssl=true&replicaSet=learnMongo-shard-0&authSource=admin&retryWrites=true';
+const dbUrl = 'you db url';
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
